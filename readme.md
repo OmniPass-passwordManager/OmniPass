@@ -105,6 +105,7 @@ OmniPass/
 ├── readme.md
 ├── todo.md
 └── LICENSE
+```
 
 ## 🚀 Running OmniPass
 

@@ -45,30 +45,18 @@ public class PasswordEntry {
 
     // setter
     public void setUsername(String username) {
-        if (username.isEmpty()) {
-        } else {
             this.username = username;
-        }
     }
 
     public void setPassword(String password) {
-        if (password.isEmpty()) {
-        } else {
             this.password = password;
-        }
     }
 
     public void setNotes(String notes) {
-        if (notes.isEmpty()) {
-        } else {
             this.notes = notes;
-        }
     }
 
     public void setWebsite(String website) {
-        if (website.isEmpty()) {
-        } else {
-            this.website = website;
-        }
+        this.website = website;
     }
 }

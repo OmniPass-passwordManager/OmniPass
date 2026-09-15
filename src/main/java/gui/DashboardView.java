@@ -34,7 +34,7 @@ public class DashboardView {
         ThemeManager.applyThemeToRoot(dialogPane,ThemeManager.getCurrentTheme());
     }
 
-    private void showAddPaddwordDialog(ListView<PasswordEntry> passwordList){
+    private void showAddPasswordDialog(ListView<PasswordEntry> passwordList){
 
         Dialog<ButtonType> dialog = new Dialog<>();
 
@@ -278,7 +278,7 @@ public class DashboardView {
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
             confirmation.setTitle("Delete Password");
             confirmation.setHeaderText("Delete this password?");
-            confirmation.setContentText("Are you sure you want to delee this password?\n" + "This action cannot be undone.");
+            confirmation.setContentText("Are you sure you want to delete this password?\n" + "This action cannot be undone.");
             applyDialogTheme(confirmation);
             confirmation.showAndWait().ifPresent(result -> {
                 if (result == ButtonType.OK){
@@ -315,7 +315,7 @@ public class DashboardView {
 
         TopBar topBar = new TopBar();
 
-        topBar.getAddButton().setOnAction(event -> showAddPaddwordDialog(passwordList));
+        topBar.getAddButton().setOnAction(event -> showAddPasswordDialog(passwordList));
 
         topBar.getSettingsButton().setOnAction(event -> showSettings());
 
@@ -396,7 +396,7 @@ public class DashboardView {
 
         TopBar topBar = new TopBar();
 
-        topBar.getAddButton().setOnAction(event ->showAddPaddwordDialog(passwordList));
+        topBar.getAddButton().setOnAction(event ->showAddPasswordDialog(passwordList));
 
         topBar.getSettingsButton().setOnAction(event ->showSettings());
 
