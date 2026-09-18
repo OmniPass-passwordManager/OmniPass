@@ -54,7 +54,7 @@ public class LoginView {
             Parent loginContent = loginView.createContent(stage);
             Scene loginScene = new Scene(loginContent, 900, 600);
 
-            loginScene.getStylesheets().add(getClass().getResource("/styles.style.css").toExternalForm());
+            loginScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
             
             ThemeManager.applyTheme(loginScene, ThemeManager.getCurrentTheme());
 

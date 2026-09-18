@@ -109,7 +109,7 @@ public class SettingsView {
 
                     error.setTitle("Export failed");
                     error.setTitle(null);
-                    error.setContentText("Failed tp export the vault.");
+                    error.setContentText("Failed to export the vault.");
 
                     error.showAndWait();
                 }
@@ -389,7 +389,7 @@ public class SettingsView {
                 if (currentPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()){
                     Alert error = new Alert(Alert.AlertType.ERROR);
                     
-                    error.setTitle("Invailt Password");
+                    error.setTitle("Invalid Password");
                     error.setHeaderText(null);
                     error.setContentText("All password fields are required.");
 
@@ -401,9 +401,9 @@ public class SettingsView {
                 if (!newPassword.equals(confirmPassword)){
                     Alert error = new Alert(Alert.AlertType.ERROR);
 
-                    error.setTitle("Password Do Not Match.");
+                    error.setTitle("Passwords Do Not Match.");
                     error.setHeaderText(null);
-                    error.setContentText("The new password doesnt match confirm password.");
+                    error.setContentText("The new password doesn't match the confirmation password.");
                     
                     applyThemeToDialog(error.getDialogPane());
                     error.showAndWait();

@@ -9,6 +9,8 @@ import core.security.MasterPassword;
 import java.io.*;
 import java.util.ArrayList;
 
+import java.nio.file.Files;
+
 import javax.crypto.SecretKey;
 
 
@@ -50,28 +52,52 @@ public class VaultService {
 
         SecretKey newKey = credentials.key();
 
-        if (!VaultStorage.save(vault, VAULT_FILE, newKey)){return false;}
+        File vaultFile = new File(VAULT_FILE);
+        File masterFile = new File("data/master.dat");
+
+        byte[] oldVault = null;
+        byte[] oldMaster = null;
 
         try {
-            File masterfile = new File("data/master.dat");
+            if (vaultFile.exists()){
+                oldVault = Files.readAllBytes(vaultFile.toPath());
+            }
+
+            if (masterFile.exists()) {
+                oldMaster = Files.readAllBytes(masterFile.toPath());
+            }
+
+            if (!VaultStorage.save(vault, VAULT_FILE, newKey)){
+                return false;
+            }
 
             String saltHex = core.crypto.EncryptionManager.bytesToHex(credentials.salt());
 
-            try(BufferedWriter writer = new BufferedWriter(new FileWriter(masterfile))){
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(masterFile))) {
                 writer.write(saltHex + ":" + credentials.hash());
             }
-        } catch (IOException e){
-            e.printStackTrace();
 
-            // The vault has already been encrypted with the new key,
-            // but the master password file could not be updated.
-            // Do not switch th active key
+            key = newKey;
+            return true;
+
+        } catch (IOException e) {
+
+            try {
+                if (oldVault != null) {
+                    Files.write(masterFile.toPath(), oldVault);
+                }
+
+                if (oldMaster != null) {
+                    Files.write(masterFile.toPath(), oldMaster);
+                }
+
+            } catch (IOException restoreException) {
+                restoreException.printStackTrace();
+            }
+
+            e.printStackTrace();
             return false;
         }
-
-        key = newKey;
-
-        return true;
     }
 
     public void lock(){

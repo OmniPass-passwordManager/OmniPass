@@ -122,4 +122,40 @@ class EncryptionManagerTest{
 
         assertEquals(plaintext, decrypted);
     }
+
+    @Test 
+    void oddLengthHexFails() {
+        assertThrows(
+            IllegalArgumentException.class, 
+            () -> EncryptionManager.hexToBytes("abc")
+        );
+    }
+
+    @Test 
+    void invalidHexFails() {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> EncryptionManager.hexToBytes("zzzz")
+        );
+    }
+
+    @Test 
+    void hexRoundTripWorks() {
+        byte[] orignal = {0x01, 0x23, (byte) 0xab, (byte) 0xff};
+
+        String hex = EncryptionManager.bytesToHex(orignal);
+        byte[] decoded = EncryptionManager.hexToBytes(hex);
+
+        assertArrayEquals(orignal, decoded);
+    }
+
+    @Test 
+    void hashSupportsUnicode() {
+        String text = "OmniPass 🔐 नमस्ते";
+
+        String hash = EncryptionManager.hash(text);
+
+        assertNotNull(hash);
+        assertEquals(64, hash.length());
+    }
 }

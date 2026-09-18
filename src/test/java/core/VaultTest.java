@@ -77,14 +77,14 @@ public class VaultTest {
         assertFalse(results.contains(google));
     }
 
-    @Test 
-    void searchByWebsiteCurrentCaseBehavior(){
+    @Test
+    void searchByWebsiteIsCaseInsensitive() {
         Vault vault = new Vault();
 
         PasswordEntry entry = new PasswordEntry(
-            "GitHub.com", 
-            "user123", 
-            "password123", 
+            "GitHub.com",
+            "user123",
+            "password123",
             "GitHub account"
         );
 
@@ -92,7 +92,8 @@ public class VaultTest {
 
         ArrayList<PasswordEntry> results = vault.searchByWebsite("github");
 
-        assertTrue(results.isEmpty());
+        assertEquals(1, results.size());
+        assertTrue(results.contains(entry));
     }
 
 }

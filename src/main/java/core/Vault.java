@@ -12,7 +12,7 @@ public class Vault {
         website = website.toLowerCase();
 
         for (PasswordEntry entry : entries) {
-            String web = entry.getWebsite();
+            String web = entry.getWebsite().toLowerCase();
             if (web.contains(website)) {
                 results.add(entry);
             }

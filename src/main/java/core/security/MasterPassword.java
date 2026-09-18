@@ -86,7 +86,7 @@ public class MasterPassword {
 
             boolean created = generator(password);
 
-            if (created == false){
+            if (!created){
                 System.out.println("Master password was not created");
                 return;
             }
@@ -105,33 +105,52 @@ public class MasterPassword {
         return;
     }
 
-    public static SecretKey authenticate(String enteredPassword) {
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(MASTER_FILE))) {
+    public static SecretKey authenticate(String enteredPassword){
+        try(BufferedReader reader = new BufferedReader(new FileReader(MASTER_FILE))) {
 
             String line = reader.readLine();
 
-            String[] parts = line.split(":");
+            if (line == null || line.isBlank()){
+                System.out.println("Invalid master password file");
+                return null;
+            }
 
-            if (parts.length != 2) {
-                System.out.println("Invalid master password file.");
+            String[] parts = line.split(":",-1);
+
+            if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()){
+                System.out.println("Invalid master password file");
                 return null;
             }
 
             String saltHex = parts[0];
             String savedHash = parts[1];
 
-            byte[] salt = EncryptionManager.hexToBytes(saltHex);
+            byte[] salt;
 
-            String enteredHash = EncryptionManager.pbkdf2Hash(enteredPassword, salt);
+            try {
+                salt = EncryptionManager.hexToBytes(saltHex);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid master password file");
+                return null;
+            }
 
-            if (savedHash.equals((enteredHash))) {
+            if (salt.length != 16) {
+                System.out.println("Invalid master password file");
+                return null;
+            }
+
+            String enteredHash = EncryptionManager.pbkdf2Hash(enteredPassword,salt);
+
+            if (savedHash.equals(enteredHash)) {
                 return EncryptionManager.deriveKey(enteredPassword, salt);
             }
 
             return null;
-
-        }catch (IOException e) {
+            
+        } catch (FileNotFoundException e) {
+            System.out.println("Failed to read master password.");
+            return null;
+        } catch (IOException e) {
             System.out.println("Failed to read master password.");
             e.printStackTrace();
             return null;

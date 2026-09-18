@@ -123,4 +123,30 @@ class MasterPasswordTest {
 
         assertNull(key);
     }
+
+    @Test 
+    void emptyMasterFileFails() throws Exception {
+        Files.createDirectories(MASTER_FILE.getParent());
+
+        Files.writeString(MASTER_FILE, "", StandardCharsets.UTF_8);
+
+        SecretKey key = MasterPassword.authenticate("test-password");
+
+        assertNull(key);
+    }
+
+    @Test 
+    void invalidSaltFails() throws Exception {
+        Files.createDirectories(MASTER_FILE.getParent());
+
+        Files.writeString(
+            MASTER_FILE,
+            "not-valid-hex:somehash", 
+            StandardCharsets.UTF_8
+        );
+
+        SecretKey key = MasterPassword.authenticate("test-password");
+
+        assertNull(key);
+    }
 }

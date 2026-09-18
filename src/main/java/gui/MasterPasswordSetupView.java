@@ -19,7 +19,7 @@ public class MasterPasswordSetupView {
         String confirm = confirmField.getText();
 
         if (password.isBlank() || confirm.isBlank()){
-            showError("Please fill in bothe password feilds");
+            showError("Please fill in both password fields");
             return;
         }
 

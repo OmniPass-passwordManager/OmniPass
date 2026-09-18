@@ -100,6 +100,9 @@ public class EncryptionManager {
     }
 
     public static byte[] hexToBytes(String hex) {
+        if (hex == null || hex.length() % 2 != 0) {
+            throw new IllegalArgumentException("Invalid hexadecimal string.");
+        }
 
         byte[] bytes = new byte[hex.length() / 2];
 
@@ -107,9 +110,16 @@ public class EncryptionManager {
 
             int index = i * 2;
 
-            bytes[i] = (byte) Integer.parseInt(hex.substring(index, index + 2), 16);
+            try {
+                bytes[i] = (byte) Integer.parseInt(
+                    hex.substring(index, index + 2),
+                    16
+                );
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid hexadecimal string.", e);
+            }
         }
-
+        
         return bytes;
     }
 
@@ -145,7 +155,7 @@ public class EncryptionManager {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 
-            byte[] hash = md.digest(text.getBytes());
+            byte[] hash = md.digest(text.getBytes(StandardCharsets.UTF_8));
 
             return bytesToHex(hash);
 
