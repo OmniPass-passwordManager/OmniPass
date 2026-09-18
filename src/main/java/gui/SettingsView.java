@@ -476,6 +476,25 @@ public class SettingsView {
         aboutLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         Button aboutButton = new Button("ℹ About OmniPass");
+        aboutButton.setOnAction(event ->{
+            Alert about = new Alert(Alert.AlertType.INFORMATION);
+
+            about.setTitle("About OmniPass");
+            about.setHeaderText("OmniPass");
+            about.setContentText(
+                "Version 0.2.0\n\n" +
+                "A secure Java password manager.\n\n" +
+                "Security:\n" +
+                "• AES-256-GCM vault encryption\n" +
+                "• PBKDF2-HMAC-SHA256 key derivation\n" +
+                "• Random salts and encryption nonces\n\n" +
+                "Licensed under the MIT License."
+            );
+
+            applyThemeToDialog(about.getDialogPane());
+            about.showAndWait();
+
+        });
 
         Button backButton = new Button("<- Back");
         backButton.setOnAction(event -> onBack.run());

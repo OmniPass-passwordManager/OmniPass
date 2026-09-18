@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.Scene;
 
 public class MasterPasswordSetupView {
     
@@ -32,7 +33,17 @@ public class MasterPasswordSetupView {
 
         LoginView loginView = new LoginView();
 
-        stage.setScene(new javafx.scene.Scene(loginView.createContent(stage),900,600));
+        Scene loginScene = new Scene(
+            loginView.createContent(stage),
+            900,
+            600
+        );
+
+        loginScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+
+        ThemeManager.applyTheme(loginScene, ThemeManager.getCurrentTheme());
+
+        stage.setScene(loginScene);
     }
 
     private void showError(String message){
