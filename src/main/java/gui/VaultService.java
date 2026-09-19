@@ -84,7 +84,7 @@ public class VaultService {
 
             try {
                 if (oldVault != null) {
-                    Files.write(masterFile.toPath(), oldVault);
+                    Files.write(vaultFile.toPath(), oldVault);
                 }
 
                 if (oldMaster != null) {
