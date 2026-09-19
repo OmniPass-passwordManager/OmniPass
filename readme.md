@@ -4,57 +4,65 @@
 
 > 🚧 OmniPass is currently under active development and is **not production-ready**.
 
-The `develop` branch contains the current desktop GUI work built on top of the password-manager core.
+The `develop` branch contains the current desktop GUI and password-manager core.
 
 ## ✨ Current Features
 
-### Password management
+### Password Management
 
 - Add password entries
 - View saved passwords
 - Search passwords by website
+- Case-insensitive website search
 - Edit password entries
 - Delete password entries
-- Generate secure random passwords
-- Choose a password length when generating a password
+- Secure random password generation
+- Configurable password length
 
-### Vault & security
+### Vault & Security
 
 - Master password authentication
-- Salted **PBKDF2-HMAC-SHA256** password derivation
+- Salted PBKDF2-HMAC-SHA256 key derivation
 - 256-bit AES keys
-- Encrypted vault storage
-- Random IV generation for vault encryption
-- Persistent vault save/load
+- AES-256-GCM authenticated vault encryption
+- Random encryption nonces
+- Encrypted persistent vault storage
 - Change master password
-- Re-encrypt vault when changing the master password
-- Lock OmniPass and return to the login screen
+- Automatic vault re-encryption when changing the master password
+- Lock OmniPass
 - Delete/reset vault with master-password verification
+- Input validation for security-related data
 
-### Backup & import/export
+### Backup & Import/Export
 
 - Export encrypted vault backups
 - Import encrypted vault backups
-- Backup-password protection
+- Separate backup password protection
+- Random backup encryption salt
 - Restore imported entries into the active vault
+- Backup format validation
 
 ### Desktop GUI
 
 - JavaFX desktop application
-- GUI master-password login
-- Dark theme
-- Light theme
-- Theme switching
+- Master-password setup screen
+- Master-password login
 - Dashboard
-- Password list UI
+- Password list
 - Search bar
 - Add password dialog
 - Edit password dialog
+- Password details
+- Clipboard password copying
 - Settings page
-- Change Master Password
+- Import/export controls
+- Change master password
 - Lock OmniPass
-- Import/Export controls
-- Delete Vault controls
+- Delete vault
+- Light theme
+- Dark theme
+- Theme switching
+- About OmniPass dialog
 
 ## 🛠️ Tech Stack
 
@@ -63,8 +71,9 @@ The `develop` branch contains the current desktop GUI work built on top of the p
 | Java 26 | Application language |
 | Maven | Build and dependency management |
 | JavaFX 26 | Desktop GUI |
-| AES | Vault encryption |
-| PBKDF2-HMAC-SHA256 | Master password key derivation |
+| JUnit | Automated testing |
+| AES-256-GCM | Authenticated vault/backup encryption |
+| PBKDF2-HMAC-SHA256 | Password-based key derivation |
 | Git / GitHub | Version control |
 
 ## 📁 Project Structure
@@ -72,44 +81,56 @@ The `develop` branch contains the current desktop GUI work built on top of the p
 ```text
 OmniPass/
 ├── src/
-│   └── main/
-│       ├── java/
-│       │   ├── core/
-│       │   │   ├── crypto/
-│       │   │   │   └── EncryptionManger.java
-│       │   │   ├── security/
-│       │   │   │   └── MasterPassword.java
-│       │   │   ├── storage/
-│       │   │   │   └── VaultStorage.java
-│       │   │   ├── utils/
-│       │   │   │   └── PasswordGenerator.java
-│       │   │   ├── BackupStorage.java
-│       │   │   ├── PasswordEntry.java
-│       │   │   ├── Vault.java
-│       │   │   └── Main.java
-│       │   └── gui/
-│       │       ├── components/
-│       │       │   └── TopBar.java
-│       │       ├── DashboardView.java
-│       │       ├── LoginView.java
-│       │       ├── MasterPasswordSetupView.java
-│       │       ├── OmniPassApp.java
-│       │       ├── SettingsView.java 
-│       │       ├── ThemeManager.java
-│       │       └── VaultService.java 
-│       └── resources/
-│           └── styles/
-│               └── style.css
-├── docs/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── core/
+│   │   │   │   ├── crypto/
+│   │   │   │   │   └── EncryptionManager.java
+│   │   │   │   ├── security/
+│   │   │   │   │   └── MasterPassword.java
+│   │   │   │   ├── storage/
+│   │   │   │   │   └── VaultStorage.java
+│   │   │   │   ├── utils/
+│   │   │   │   │   └── PasswordGenerator.java
+│   │   │   │   ├── BackupStorage.java
+│   │   │   │   ├── PasswordEntry.java
+│   │   │   │   ├── Vault.java
+│   │   │   │   └── Main.java
+│   │   │   └── gui/
+│   │   │       ├── components/
+│   │   │       │   └── TopBar.java
+│   │   │       ├── DashboardView.java
+│   │   │       ├── LoginView.java
+│   │   │       ├── MasterPasswordSetupView.java
+│   │   │       ├── OmniPassApp.java
+│   │   │       ├── SettingsView.java
+│   │   │       ├── ThemeManager.java
+│   │   │       └── VaultService.java
+│   │   └── resources/
+│   │       └── styles/
+│   │           └── style.css
+│   └── test/
+│       └── java/
+│           ├── core/
+│           │   ├── BackupStorageTest.java
+│           │   ├── PasswordEntryTest.java
+│           │   ├── VaultTest.java
+│           │   ├── crypto/
+│           │   │   └── EncryptionManagerTest.java
+│           │   ├── security/
+│           │   │   └── MasterPasswordTest.java
+│           │   └── storage/
+│           │       └── VaultStorageTest.java
+│           └── gui/
+│               └── VaultServiceTest.java
 ├── pom.xml
 ├── readme.md
-├── todo.md
 └── LICENSE
 ```
 
 ## 🚀 Running OmniPass
 
-Make sure Java and Maven are installed.
+Make sure Java 26 and Maven are installed.
 
 ### Compile
 
@@ -123,21 +144,32 @@ mvn compile
 mvn javafx:run
 ```
 
-The current GUI flow is:
+### Run tests
 
-```text
-Start OmniPass
-      ↓
-Master Password Login
-      ↓
-Authenticate password
-      ↓
-Dashboard
+```bash
+mvn clean test
 ```
+
+The current test suite contains **52 automated tests**.
+
+## 🔐 Encryption
+
+OmniPass currently uses:
+
+- **AES/GCM/NoPadding**
+- 256-bit AES keys
+- 12-byte random GCM nonces
+- 128-bit GCM authentication tags
+- **PBKDF2WithHmacSHA256**
+- 65,536 PBKDF2 iterations
+- 16-byte random salts
+- UTF-8 encoding
+
+Vault and backup data are encrypted before being written to disk.
 
 ## 🗺️ Roadmap
 
-### v0.2.0 — Core
+### v0.2.0 — Core & GUI
 
 - [x] CLI password manager
 - [x] Add / view / search passwords
@@ -145,52 +177,37 @@ Dashboard
 - [x] Password generator
 - [x] Master password authentication
 - [x] Encrypted vault storage
-- [x] Maven migration
+- [x] JavaFX desktop application
+- [x] Dashboard
+- [x] Settings
+- [x] Light / dark themes
+- [x] Import / export
+- [x] Change master password
+- [x] Lock OmniPass
+- [x] Delete/reset vault
+- [x] AES-GCM encryption
+- [x] Automated test suite
 
-### v0.3.0 — Desktop GUI
+### Future Work
 
-- [x] JavaFX application
-- [x] GUI login
-- [x] Dark theme
-- [x] Dashboard foundation
-- [x] Search bar UI
-- [x] Add Password button UI
-- [x] Settings button UI
-- [x] Password list UI
-- [x] Add password dialog
-- [x] Edit password dialog
-- [x] Search foundation
-- [x] Settings page
-- [x] Light theme
-- [x] Dark theme
-- [x] Theme manager
-- [x] Settings functionality
-- [x] Import/Export
-- [x] Erase button
-
-### v1.0.0 — Stable Release
-
-- [ ] Complete desktop application
-- [ ] Comprehensive testing
-- [ ] Better error handling
-- [ ] Documentation
+- [ ] Improve error handling
+- [ ] Persistent theme preference
+- [ ] More comprehensive GUI testing
 - [ ] Packaging / distribution
 - [ ] Security review
-- [ ] AES-GCM migration
-- [ ] Change master password
-- [ ] Import/export vault
-- [ ] Delete/reset vault
-
+- [ ] Additional usability improvements
 
 ## ⚠️ Security Status
 
-OmniPass is an educational and experimental project at this stage. Do not rely on it as your primary password manager for important real-world secrets yet.
+OmniPass is an educational and experimental project and is **not production-ready**.
 
-The current vault and backup encryption use AES-CBC. Future security work should move the vault and backup formats to an authenticated encryption mode such as AES-GCM and include integrity protection before a stable release.
+Although the vault and backup systems use authenticated AES-GCM encryption and password-based key derivation, the project has not undergone a professional security audit.
+
+Do not use OmniPass as your primary password manager for important real-world secrets.
 
 ## 🤝 Contributing
 
-This project is currently developed primarily as a personal learning project. Suggestions, bug reports, and improvements are welcome.
+OmniPass is currently developed primarily as a personal learning project. Suggestions, bug reports, and improvements are welcome.
 
 ## 🏷️ Previous Names
 
