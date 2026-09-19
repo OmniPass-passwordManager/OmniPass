@@ -102,7 +102,9 @@ public class MasterPassword {
         }
     }
 
-    public static void create(String password){generator(password);}
+    public static boolean create(String password){
+        return generator(password);
+    }
 
     public static SecretKey authenticate(String enteredPassword){
         try(BufferedReader reader = new BufferedReader(new FileReader(MASTER_FILE))) {
