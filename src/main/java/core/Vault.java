@@ -1,6 +1,8 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Locale;
 
 public class Vault {
 
@@ -9,10 +11,10 @@ public class Vault {
     public ArrayList<PasswordEntry> searchByWebsite(String website) {
 
         ArrayList<PasswordEntry> results = new ArrayList<>();
-        website = website.toLowerCase();
+        website = website.toLowerCase(Locale.ROOT);
 
         for (PasswordEntry entry : entries) {
-            String web = entry.getWebsite().toLowerCase();
+            String web = entry.getWebsite().toLowerCase(Locale.ROOT);
             if (web.contains(website)) {
                 results.add(entry);
             }
@@ -23,7 +25,7 @@ public class Vault {
     }
 
     public ArrayList<PasswordEntry> getEntries() {
-        return entries;
+        return new ArrayList<>(entries);
     }
 
     public Vault() {
@@ -36,6 +38,14 @@ public class Vault {
 
     public void removeEntry(PasswordEntry entry) {
         entries.remove(entry);
+    }
+
+    public void clear() {
+        entries.clear();
+    }
+
+    public void addEntries(Collection<PasswordEntry> newEntries) {
+        entries.addAll(newEntries);
     }
 
     public void displayEntries() {

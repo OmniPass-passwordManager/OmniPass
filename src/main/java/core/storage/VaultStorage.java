@@ -54,8 +54,7 @@ public class VaultStorage {
         } catch (FileNotFoundException e) {
             System.out.println("No existing vault found. Starting with an empty vault.");
         } catch (IOException e) {
-            System.out.println("Failed to load vault.");
-            e.printStackTrace();
+            throw new RuntimeException("Failed to load vault.", e);
         }
         return vault;
     }

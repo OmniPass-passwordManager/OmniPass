@@ -39,7 +39,7 @@ public class LoginView {
         try {
             vault = VaultStorage.load("data/vault.dat", key);
         } catch (RuntimeException e){
-            showError("Vault cound not be verified. It may be corrupted or modified.");
+            showError("Vault could not be verified. It may be corrupted or modified.");
             return;
         }
 

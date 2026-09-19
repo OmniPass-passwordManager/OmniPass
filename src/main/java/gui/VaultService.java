@@ -101,20 +101,20 @@ public class VaultService {
     }
 
     public void lock(){
-        vault.getEntries().clear();
+        vault.clear();
         key = null;
     }
 
     public void deleteVault(){
-        vault.getEntries().clear();
+        vault.clear();
         File vaultFile = new File(VAULT_FILE);
         if (vaultFile.exists() && !vaultFile.delete()){throw new RuntimeException("Failed to delete vault.");}
     }
 
     public void importVault(String filename,String exportPassword){
         Vault importedVault = BackupStorage.importVault(filename, exportPassword);
-        vault.getEntries().clear();
-        vault.getEntries().addAll(importedVault.getEntries());
+        vault.clear();
+        vault.addEntries(importedVault.getEntries());
         VaultStorage.save(vault, VAULT_FILE, key);
     }
 

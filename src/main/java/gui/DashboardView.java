@@ -151,10 +151,8 @@ public class DashboardView {
                 String password = passwordField.getText();
                 String notes = notesField.getText();
 
-                if (website.isBlank() || username.isBlank()){
-                    if (password.isBlank()){password = entry.getPassword();}
-                    return null;
-                }
+                if (website.isBlank() || username.isBlank()){return null;}
+                if (password.isBlank()){password = entry.getPassword();}
 
                 vaultService.updateEntry(entry,website,username,password,notes);
 
@@ -319,6 +317,10 @@ public class DashboardView {
 
         topBar.getSettingsButton().setOnAction(event -> showSettings());
 
+        topBar.getSearchField().textProperty().addListener((obs, oldValue, newValue) -> {
+            passwordList.getItems().setAll(vaultService.search(newValue));
+        });
+
         root.setTop(topBar);
 
         passwordList.setCellFactory(list -> {
@@ -399,6 +401,8 @@ public class DashboardView {
         topBar.getAddButton().setOnAction(event ->showAddPasswordDialog(passwordList));
 
         topBar.getSettingsButton().setOnAction(event ->showSettings());
+
+        topBar.getSearchField().textProperty().addListener((obs, oldValue, newValue) -> {passwordList.getItems().setAll(vaultService.search(newValue));});
 
         root.setTop(topBar);
         root.setCenter(passwordCenter);

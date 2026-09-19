@@ -216,7 +216,7 @@ public class Main {
                     length = Integer.parseInt(input);
 
                     if (length < 4) {
-                        System.out.println("Password must be atleast 4 characters.");
+                        System.out.println("Password must be at least 4 characters.");
                         continue;
                     }
                     break;

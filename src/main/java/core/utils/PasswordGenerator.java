@@ -26,7 +26,7 @@ public class PasswordGenerator {
     public static String generate(int length) {
 
         if (length < 4) {
-            throw new IllegalArgumentException("Password length must be atleast 4.");
+            throw new IllegalArgumentException("Password length must be at least 4.");
         }
 
         StringBuilder password = new StringBuilder();

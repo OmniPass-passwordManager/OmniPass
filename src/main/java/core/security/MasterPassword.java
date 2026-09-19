@@ -26,7 +26,7 @@ public class MasterPassword {
         return new Credentials(salt, hash, key);
     }
 
-    private static Boolean generator(String password){
+    private static boolean generator(String password){
 
         try (FileWriter writer = new FileWriter(MASTER_FILE)) {
 
@@ -41,7 +41,7 @@ public class MasterPassword {
             return true;
 
         } catch (FileNotFoundException e){
-            System.out.println("file not there");
+            System.out.println("Failed to create master password file.");
             return false;
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,15 +95,9 @@ public class MasterPassword {
                 return;
             }
         }
-
     }
 
-    public static void create(String password){
-
-        boolean created = generator(password);
-        if (created) {}
-        return;
-    }
+    public static void create(String password){generator(password);}
 
     public static SecretKey authenticate(String enteredPassword){
         try(BufferedReader reader = new BufferedReader(new FileReader(MASTER_FILE))) {

@@ -14,7 +14,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class VaultStrorageTest {
+public class VaultStorageTest {
 
     private final Path vaultFile = Path.of("data/test-vault.dat");
 

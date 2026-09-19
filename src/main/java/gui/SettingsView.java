@@ -108,14 +108,12 @@ public class SettingsView {
                     applyThemeToDialog(error.getDialogPane());
 
                     error.setTitle("Export failed");
-                    error.setTitle(null);
+                    error.setHeaderText(null);
                     error.setContentText("Failed to export the vault.");
 
                     error.showAndWait();
                 }
-            
             });
-
         });
 
         Button importButton = new Button("📥 Import Vault");
