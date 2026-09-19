@@ -6,7 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import java.util.Scanner;
+
+import java.security.MessageDigest;
+
+import java.nio.charset.StandardCharsets;
 
 import javax.crypto.SecretKey;
 
@@ -135,7 +140,7 @@ public class MasterPassword {
 
             String enteredHash = EncryptionManager.pbkdf2Hash(enteredPassword,salt);
 
-            if (savedHash.equals(enteredHash)) {
+            if (MessageDigest.isEqual(savedHash.getBytes(StandardCharsets.UTF_8),enteredHash.getBytes(StandardCharsets.UTF_8))) {
                 return EncryptionManager.deriveKey(enteredPassword, salt);
             }
 

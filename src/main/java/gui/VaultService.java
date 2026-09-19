@@ -37,7 +37,13 @@ public class VaultService {
         VaultStorage.save(vault, VAULT_FILE, key);
     }
 
-    public void addEntry(String website,String username,String password,String notes){
+    public void addEntry(String website, String username, String password, String notes) {
+        if (website == null || website.isBlank()
+                || username == null || username.isBlank()
+                || password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Website, username, and password are required.");
+        }
+
         PasswordEntry entry = new PasswordEntry(website, username, password, notes);
         vault.addEntry(entry);
         VaultStorage.save(vault, VAULT_FILE, key);
@@ -118,12 +124,24 @@ public class VaultService {
         VaultStorage.save(vault, VAULT_FILE, key);
     }
 
-    public void updateEntry(PasswordEntry entry,String website,String username,String password,String notes){
+    public void updateEntry(
+        PasswordEntry entry,
+        String website,
+        String username,
+        String password,
+        String notes
+    ) {
+        if (website == null || website.isBlank()
+                || username == null || username.isBlank()
+                || password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Website, username, and password are required.");
+        }
+
         entry.setWebsite(website);
         entry.setUsername(username);
         entry.setPassword(password);
         entry.setNotes(notes);
+
         VaultStorage.save(vault, VAULT_FILE, key);
     }
-
 }
