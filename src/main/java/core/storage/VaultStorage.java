@@ -88,11 +88,28 @@ public class VaultStorage {
 
             String encrypted = EncryptionManager.encrypt(builder.toString(), key);
                 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){writer.write(encrypted);}
+            File tempFile = new File(filename + ".tmp");
 
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {writer.write(encrypted);}
+            try {
+                java.nio.file.Files.move(
+                    tempFile.toPath(),
+                    file.toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                    java.nio.file.StandardCopyOption.ATOMIC_MOVE
+                    );
+            } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+                java.nio.file.Files.move(
+                tempFile.toPath(),
+                file.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
+        }
             return true;
-
         } catch (IOException e) {
+            File tempFile = new File(filename + ".tmp");
+            if (tempFile.exists() && !tempFile.delete()) {System.out.println("Warning: failed to remove temporary vault file.");}
+
             System.out.println("Failed to save vault.");
             e.printStackTrace();
             return false;

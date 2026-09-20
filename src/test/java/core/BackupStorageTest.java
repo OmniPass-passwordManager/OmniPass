@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BackupStorageTest {
     
-    private final Path backupFile = Path.of("data/test-backup.opd");
+    private final Path backupFile = Path.of("data/test-backup.opb");
 
     @AfterEach 
     void cleanup() throws Exception {
