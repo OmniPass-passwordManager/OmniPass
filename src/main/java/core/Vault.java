@@ -1,8 +1,6 @@
 package core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Locale;
+import java.util.*;
 
 public class Vault {
 

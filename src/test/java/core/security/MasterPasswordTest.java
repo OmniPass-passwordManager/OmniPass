@@ -1,13 +1,12 @@
 package core.security;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,7 +73,7 @@ class MasterPasswordTest {
                 MasterPassword.generateCredentials("test-password");
 
         assertFalse(
-                java.util.Arrays.equals(
+                Arrays.equals(
                         credentials1.salt(),
                         credentials2.salt()
                 )

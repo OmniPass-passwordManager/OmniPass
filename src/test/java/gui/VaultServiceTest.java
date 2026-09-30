@@ -1,19 +1,15 @@
 package gui;
 
-
 import core.PasswordEntry;
 import core.Vault;
 
 import core.security.MasterPassword;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import javax.crypto.SecretKey;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

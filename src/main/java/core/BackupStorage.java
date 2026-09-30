@@ -6,6 +6,7 @@ import core.crypto.EncryptionManager;
 import java.util.Base64;
 import java.nio.charset.StandardCharsets;
 
+import java.nio.file.*;
 import java.io.*;
 import javax.crypto.SecretKey;
 
@@ -56,18 +57,39 @@ public class BackupStorage {
 
             if (parent != null && !parent.exists()){parent.mkdirs();}
 
-            try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
+            File tempFile = new File(filename + ".tmp");
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
                 writer.write(HEADER);
                 writer.newLine();
 
                 writer.write(EncryptionManager.bytesToHex(salt));
-
                 writer.newLine();
 
                 writer.write(encrypted);
             }
+            try {
+                Files.move(
+                    tempFile.toPath(),
+                    file.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE
+                );
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(
+                tempFile.toPath(),
+                file.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+                );
+            }
         } catch (IOException e){
-            throw new RuntimeException("Failed to export vault.",e);
+            File tempFile = new File(filename + ".tmp");
+
+            if (tempFile.exists() && !tempFile.delete()) {
+                System.out.println("Warning: failed to removed temporary backup file");
+            }
+
+            throw new RuntimeException("Failed to export vault.", e);
         }
     }
 

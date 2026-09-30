@@ -8,6 +8,7 @@ import java.io.*;
 
 import javax.crypto.SecretKey;
 
+import java.nio.file.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -92,17 +93,17 @@ public class VaultStorage {
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {writer.write(encrypted);}
             try {
-                java.nio.file.Files.move(
+                Files.move(
                     tempFile.toPath(),
                     file.toPath(),
-                    java.nio.file.StandardCopyOption.REPLACE_EXISTING,
-                    java.nio.file.StandardCopyOption.ATOMIC_MOVE
+                    StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE
                     );
-            } catch (java.nio.file.AtomicMoveNotSupportedException e) {
-                java.nio.file.Files.move(
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(
                 tempFile.toPath(),
                 file.toPath(),
-                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                StandardCopyOption.REPLACE_EXISTING
             );
         }
             return true;
