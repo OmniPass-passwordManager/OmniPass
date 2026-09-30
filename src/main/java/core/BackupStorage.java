@@ -86,7 +86,7 @@ public class BackupStorage {
             File tempFile = new File(filename + ".tmp");
 
             if (tempFile.exists() && !tempFile.delete()) {
-                System.out.println("Warning: failed to removed temporary backup file");
+                System.out.println("Warning: failed to remove temporary backup file");
             }
 
             throw new RuntimeException("Failed to export vault.", e);
