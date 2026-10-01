@@ -29,7 +29,10 @@ public class MasterPasswordSetupView {
             return;
         }
 
-        MasterPassword.create(password);
+        if (!MasterPassword.create(password)) {
+            showError("Failed to create master password.");
+            return;
+        }
 
         LoginView loginView = new LoginView();
 
