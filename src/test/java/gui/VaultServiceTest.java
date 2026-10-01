@@ -218,6 +218,21 @@ class VaultServiceTest {
     }
 
     @Test
+    void deleteVaultRemovesVaultAndClearsEntries() {
+        VaultService service = createService("test-password");
+
+        service.addEntry("github.com", "user123", "password123", "notes");
+
+        assertFalse(service.getEntries().isEmpty());
+        assertTrue(Files.exists(VAULT_FILE));
+
+        service.deleteVault();
+
+        assertTrue(service.getEntries().isEmpty());
+        assertFalse(Files.exists(VAULT_FILE));
+    }
+
+    @Test
     void exportAndImportVault() {
         VaultService service = createService("test-password");
 
@@ -297,5 +312,302 @@ class VaultServiceTest {
         assertEquals("github.com", entry.getWebsite());
         assertEquals("user123", entry.getUsername());
         assertEquals("password123", entry.getPassword());
+    }
+
+    @Test 
+    void addEntryRejectsInvalidInput() {
+        VaultService service = createService("test-password");
+
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> service.addEntry(
+                    "",
+                    "user123",
+                    "password123",
+                    "notes"
+            )
+        );
+
+        assertThrows(
+                IllegalArgumentException.class, 
+                () -> service.addEntry(
+                        "github.com", 
+                        "", 
+                        "password123",
+                        "notes"
+                )
+        );
+
+        assertThrows(
+                IllegalArgumentException.class, 
+                () -> service.addEntry(
+                        "github.com", 
+                        "user123", 
+                        "", 
+                        "notes"
+                )
+        );
+
+        assertTrue(service.getEntries().isEmpty());
+    }
+
+    @Test 
+    void updateEntryRejectsInvalidInput() {
+        VaultService service = createService("test-password");
+
+        service.addEntry(
+                "github.com", 
+                "user123", 
+                "password123", 
+                "notes"
+        );
+
+        PasswordEntry entry = service.getEntries().get(0);
+
+        assertThrows(
+                IllegalArgumentException.class, 
+                () -> service.updateEntry(
+                        entry, 
+                        "", 
+                        "new-user", 
+                        "new-password", 
+                        "new notes"
+                )
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.updateEntry(
+                        entry, 
+                        "google.com", 
+                        "", 
+                        "new-password", 
+                        "new notes"
+                )
+        );
+
+        assertThrows(
+                IllegalArgumentException.class, 
+                () -> service.updateEntry(
+                        entry, 
+                        "google.com", 
+                        "new-user", 
+                        "", 
+                        "new notes"
+                )
+        );
+
+        // Make sure the failed updates didn't modify the original entry.
+        assertEquals("github.com", entry.getWebsite());
+        assertEquals("user123", entry.getUsername());
+        assertEquals("password123", entry.getPassword());
+        assertEquals("notes", entry.getNotes());
+
+    }
+
+    @Test 
+    void deleteEntryRejectsNull() {
+        VaultService service = createService("test-password");
+
+        assertThrows(
+                IllegalArgumentException.class, 
+                () -> service.deleteEntry(null)
+        );
+
+        assertTrue(service.getEntries().isEmpty());
+    }
+
+    @Test 
+    void changeMasterPasswordRejectsWrongCurrentPassword() {
+        VaultService service = createService("old-password");
+
+        service.addEntry(
+                "github.com", 
+                "user123", 
+                "password123", 
+                "notes"
+        );
+
+        boolean changed = service.changeMasterPassword("wrong-password", "new-password");
+
+        assertFalse(changed);
+
+        assertNotNull(MasterPassword.authenticate("old-password"));
+
+        assertNull(MasterPassword.authenticate("new-password"));
+
+        assertEquals(1, service.getEntries().size());
+    }
+
+    @Test 
+    void changeMasterPasswordUpdatesCredentials() {
+        VaultService service = createService("old-password");
+
+        service.addEntry(
+                "github.com", 
+                "user123", 
+                "password123", 
+                "notes"
+        );
+
+        boolean changed = service.changeMasterPassword("old-password", "new-password");
+
+        assertTrue(changed);
+
+        assertNull(MasterPassword.authenticate("old-password"));
+
+        assertNotNull(MasterPassword.authenticate("new-password"));
+
+        assertEquals(1, service.getEntries().size());
+        assertEquals("github.com", service.getEntries().get(0).getWebsite());
+    }
+
+    @Test 
+    void lockClearsVaultAndKey() {
+        VaultService service = createService("test-password");
+
+        service.addEntry("github.com", "user123", "password123", "notes");
+
+        assertFalse(service.getEntries().isEmpty());
+
+        service.lock();
+
+        assertTrue(service.getEntries().isEmpty());
+
+        assertThrows(
+                RuntimeException.class,
+                () -> service.addEntry("google.com", "user456", "password456", "notes")
+        ); 
+    }
+
+    @Test 
+    void addEntryRollsBackWhenSaveFails() {
+        Vault vault = new Vault();
+        SecretKey key = MasterPassword.authenticate("test-password");
+
+        VaultService service = new VaultService(
+                vault, 
+                key,
+                (v, filename, k) -> false
+        );
+
+        assertThrows(
+                RuntimeException.class, 
+                () -> service.addEntry(
+                        "github.com", 
+                        "user123", 
+                        "password123", 
+                        "notes"
+                )
+        );
+
+        assertTrue(service.getEntries().isEmpty());
+    }
+
+    @Test 
+    void updateEntryRollsBackWhenSaveFails() {
+        Vault vault = new Vault();
+        SecretKey key = MasterPassword.authenticate("test-password");
+
+        PasswordEntry entry = new PasswordEntry("github.com", "user123", "password123", "notes");
+
+        vault.addEntry(entry);
+
+        VaultService service = new VaultService(
+                vault, 
+                key,
+                (v, filename, k) -> false
+        );
+
+        assertThrows(
+            RuntimeException.class,
+            () -> service.updateEntry(
+                    entry,
+                    "google.com",
+                    "new-user",
+                    "new-password",
+                    "new notes"
+            )
+        );
+
+        assertEquals("github.com", entry.getWebsite());
+        assertEquals("user123", entry.getUsername());
+        assertEquals("password123", entry.getPassword());
+        assertEquals("notes", entry.getNotes());
+    }
+
+    @Test 
+    void deleteEntryRollsBackWhenSaveFails() {
+        Vault vault = new Vault();
+        SecretKey key = MasterPassword.authenticate("test-password");
+
+        PasswordEntry entry = new PasswordEntry(
+                "github.com", 
+                "user123", 
+                "password123", 
+                "notes"
+        );
+        
+        vault.addEntry(entry);
+
+        VaultService service = new VaultService(
+                vault, 
+                key,
+                (v, filename, k) -> false
+        );
+
+        assertThrows(
+                RuntimeException.class,
+                () -> service.deleteEntry(entry)
+        );
+
+        assertEquals(1, service.getEntries().size());
+        assertSame(entry, service.getEntries().get(0));
+    }
+
+    @Test 
+    void importVaultRollsBackWhenSaveFails() {
+        Vault sourceVault = new Vault();
+        sourceVault.addEntry(new PasswordEntry("imported.com", "import-user", "import-password", "import notes"));
+
+        VaultService sourceService = new VaultService(
+                sourceVault, 
+                MasterPassword.authenticate("test-password")
+        );
+
+        sourceService.exportVault(EXPORT_FILE.toString(), "export-password");
+
+        Vault targetVault = new Vault();
+
+        targetVault.addEntry(new PasswordEntry(
+                "original.com", 
+                "original-user", 
+                "original-password", 
+                "original notes"
+                )
+        );
+
+        VaultService targetService = new VaultService(
+                targetVault, 
+                MasterPassword.authenticate("test-password"),
+                (v, filename, k) -> false
+        );
+
+        assertThrows(
+            RuntimeException.class,
+            () -> targetService.importVault(
+                    EXPORT_FILE.toString(),
+                    "export-password"
+            )
+        );
+
+        assertEquals(1, targetService.getEntries().size());
+
+        PasswordEntry remaining = targetService.getEntries().get(0);
+
+        assertEquals("original.com", remaining.getWebsite());
+        assertEquals("original-user", remaining.getUsername());
+        assertEquals("original-password", remaining.getPassword());
+        assertEquals("original notes", remaining.getNotes());
     }
 }

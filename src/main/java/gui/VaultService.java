@@ -20,6 +20,7 @@ public class VaultService {
     
     private final Vault vault;
     private SecretKey key;
+    private final VaultSaver vaultSaver;
 
     public ArrayList<PasswordEntry> getEntries(){return vault.getEntries();}
 
@@ -27,15 +28,21 @@ public class VaultService {
 
     public void exportVault(String filename,String exportPassword){BackupStorage.exportVault(vault, filename, exportPassword);}
 
-    public VaultService(Vault vault,SecretKey key){
+    public VaultService(Vault vault, SecretKey key) {
+        this(vault, key, VaultStorage::save);
+    }
+    
+    public VaultService(Vault vault,SecretKey key,VaultSaver vaultSaver){
         this.vault = vault;
         this.key = key;
+        this.vaultSaver = vaultSaver;
     }
 
     public void deleteEntry(PasswordEntry entry){
+        if (entry == null){throw new IllegalArgumentException("Entry cannot be null.");}
         vault.removeEntry(entry);
         
-        if (!VaultStorage.save(vault, VAULT_FILE, key)) {
+        if (!vaultSaver.save(vault, VAULT_FILE, key)) {
             vault.addEntry(entry);
             throw new RuntimeException("Failed to save vault.");
         }
@@ -51,7 +58,7 @@ public class VaultService {
         PasswordEntry entry = new PasswordEntry(website, username, password, notes);
         vault.addEntry(entry);
         
-        if (!VaultStorage.save(vault, VAULT_FILE, key)) {
+        if (!vaultSaver.save(vault, VAULT_FILE, key)) {
             vault.removeEntry(entry);
             throw new RuntimeException("Failed to save vault.");
         }
@@ -141,7 +148,7 @@ public class VaultService {
         vault.clear();
         vault.addEntries(importedVault.getEntries());
 
-        if (!VaultStorage.save(vault, VAULT_FILE, key)) {
+        if (!vaultSaver.save(vault, VAULT_FILE, key)) {
             vault.clear();
             vault.addEntries(oldEntries);
 
@@ -163,7 +170,7 @@ public class VaultService {
         entry.setPassword(password);
         entry.setNotes(notes);
 
-        if (!VaultStorage.save(vault, VAULT_FILE, key)) {
+        if (!vaultSaver.save(vault, VAULT_FILE, key)) {
             entry.setWebsite(oldWebsite);
             entry.setUsername(oldUsername);
             entry.setPassword(oldPassword);
