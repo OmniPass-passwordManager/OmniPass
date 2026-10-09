@@ -94,8 +94,7 @@ OmniPass/
 │   │   │   │   │   └── PasswordGenerator.java
 │   │   │   │   ├── BackupStorage.java
 │   │   │   │   ├── PasswordEntry.java
-│   │   │   │   ├── Vault.java
-│   │   │   │   └── Main.java
+│   │   │   │   └── Vault.java
 │   │   │   └── gui/
 │   │   │       ├── components/
 │   │   │       │   └── TopBar.java
@@ -171,7 +170,6 @@ Vault and backup data are encrypted before being written to disk.
 
 ### v0.2.0 — Core & GUI
 
-- [x] CLI password manager
 - [x] Add / view / search passwords
 - [x] Edit / delete passwords
 - [x] Password generator

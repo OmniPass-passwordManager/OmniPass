@@ -14,18 +14,6 @@ public class PasswordEntry {
         this.notes = notes;
     }
 
-    public void display() {
-        System.out.println("Website: " + website);
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-        System.out.println("Notes: " + notes);
-    }
-
-    public void displaySummary() {
-        System.out.println(getWebsite());
-        System.out.println(getUsername());
-    }
-
     // Getters
     public String getWebsite() {
         return website;

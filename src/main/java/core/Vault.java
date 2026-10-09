@@ -45,18 +45,4 @@ public class Vault {
     public void addEntries(Collection<PasswordEntry> newEntries) {
         entries.addAll(newEntries);
     }
-
-    public void displayEntries() {
-
-        if (entries.isEmpty()) {
-            System.out.println("Vault is empty.");
-            return;
-        }
-
-        for (PasswordEntry entry : entries) {
-            entry.display();
-            System.out.println("--------------------");
-        }
-    }
-
 }

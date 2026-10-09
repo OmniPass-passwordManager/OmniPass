@@ -2,8 +2,6 @@ package core.security;
 
 import java.io.*;
 
-import java.util.Scanner;
-
 import java.security.MessageDigest;
 
 import java.nio.charset.StandardCharsets;
@@ -53,49 +51,6 @@ public class MasterPassword {
         return new File(MASTER_FILE).exists();
     }
 
-    public static SecretKey cli(Scanner scanner) {
-
-        System.out.print("Enter Master Password: ");
-        String enteredPassword = scanner.nextLine();
-
-        SecretKey key = authenticate(enteredPassword);
-
-        if (key != null) {
-            System.out.println("Access Granted!");
-        } else {
-            System.out.println("Incorrect Master Password.");
-        }
-
-        return key;
-    }
-
-    public static void create(Scanner scanner) {
-
-        while (true) {
-
-            System.out.print("Create Master Password: ");
-            String password = scanner.nextLine();
-
-            System.out.print("Confirm Master Password: ");
-            String confirm = scanner.nextLine();
-
-            if (!password.equals(confirm)) {
-                System.out.println("Passwords do not match!\n");
-                continue;
-            }
-
-            boolean created = generator(password);
-
-            if (!created){
-                System.out.println("Master password was not created");
-                return;
-            }
-            else{
-                System.out.println("Master password created successfully!");
-                return;
-            }
-        }
-    }
 
     public static boolean create(String password){
         return generator(password);
